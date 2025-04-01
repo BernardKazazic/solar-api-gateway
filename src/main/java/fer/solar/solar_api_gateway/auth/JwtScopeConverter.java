@@ -17,35 +17,48 @@ public class JwtScopeConverter implements Converter<Jwt, Flux<GrantedAuthority>>
 
     @Override
     public Flux<GrantedAuthority> convert(@NonNull Jwt jwt) {
+        return convertJwtToAuthorities(jwt);
+    }
+
+    private Flux<GrantedAuthority> convertJwtToAuthorities(@NonNull Jwt jwt) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         
-        // Extract scopes
-        if (jwt.getClaims().containsKey("scope")) {
-            String scopes = (String) jwt.getClaims().get("scope");
-            if (scopes != null && !scopes.isEmpty()) {
-                authorities.addAll(
-                    Arrays.stream(scopes.split(" "))
-                        .map(scope -> new SimpleGrantedAuthority("SCOPE_" + scope))
-                        .collect(Collectors.toList())
-                );
-            }
-        }
-        
-        // Extract roles from permissions claim (common in Auth0)
-        if (jwt.getClaims().containsKey("permissions")) {
-            Object permissionsObj = jwt.getClaims().get("permissions");
-            if (permissionsObj instanceof Collection<?>) {
-                Collection<?> permissionsColl = (Collection<?>) permissionsObj;
-                authorities.addAll(
-                    permissionsColl.stream()
-                        .filter(String.class::isInstance)
-                        .map(String.class::cast)
-                        .map(permission -> new SimpleGrantedAuthority("PERMISSION_" + permission))
-                        .collect(Collectors.toList())
-                );
-            }
-        }
+        authorities.addAll(extractScopesFromJwt(jwt));
+        authorities.addAll(extractPermissionsFromJwt(jwt));
         
         return Flux.fromIterable(authorities);
+    }
+
+    List<GrantedAuthority> extractScopesFromJwt(Jwt jwt) {
+        if (!jwt.getClaims().containsKey("scope")) {
+            return new ArrayList<>();
+        }
+
+        String scopes = (String) jwt.getClaims().get("scope");
+        if (scopes == null || scopes.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return Arrays.stream(scopes.split(" "))
+                .map(scope -> new SimpleGrantedAuthority("SCOPE_" + scope))
+                .collect(Collectors.toList());
+    }
+
+    List<GrantedAuthority> extractPermissionsFromJwt(Jwt jwt) {
+        if (!jwt.getClaims().containsKey("permissions")) {
+            return new ArrayList<>();
+        }
+
+        Object permissionsObj = jwt.getClaims().get("permissions");
+        if (!(permissionsObj instanceof Collection<?>)) {
+            return new ArrayList<>();
+        }
+
+        Collection<?> permissionsColl = (Collection<?>) permissionsObj;
+        return permissionsColl.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .map(permission -> new SimpleGrantedAuthority("PERMISSION_" + permission))
+                .collect(Collectors.toList());
     }
 } 

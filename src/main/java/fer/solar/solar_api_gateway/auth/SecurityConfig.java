@@ -14,7 +14,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
@@ -37,7 +36,6 @@ public class SecurityConfig {
             .authorizeExchange(authorizeExchangeSpec -> 
                 authorizeExchangeSpec
                     .pathMatchers("/actuator/**").permitAll()
-                    .pathMatchers("/api/test").hasAuthority("SCOPE_read:test")
                     .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
@@ -63,10 +61,10 @@ public class SecurityConfig {
         NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withIssuerLocation(issuer).build();
 
         OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator(audience);
-        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuer);
-        OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
+        OAuth2TokenValidator<Jwt> issuerValidator = JwtValidators.createDefaultWithIssuer(issuer);
+        OAuth2TokenValidator<Jwt> combinedTokenValidator = new DelegatingOAuth2TokenValidator<>(issuerValidator, audienceValidator);
 
-        jwtDecoder.setJwtValidator(withAudience);
+        jwtDecoder.setJwtValidator(combinedTokenValidator);
 
         return jwtDecoder;
     }

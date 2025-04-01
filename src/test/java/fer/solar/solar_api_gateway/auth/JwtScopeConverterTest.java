@@ -2,132 +2,169 @@ package fer.solar.solar_api_gateway.auth;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class JwtScopeConverterTest {
 
-    private JwtScopeConverter converter;
+    private JwtScopeConverter jwtScopeConverter;
+
+    @Mock
     private Jwt jwt;
-    private Map<String, Object> claims;
-    private Map<String, Object> headers;
 
     @BeforeEach
     void setUp() {
-        converter = new JwtScopeConverter();
-        claims = new HashMap<>();
-        headers = new HashMap<>();
+        jwtScopeConverter = new JwtScopeConverter();
     }
 
     @Test
-    void convert_should_extractScopes_when_jwtContainsScopes() {
-        // Given
-        claims.put("scope", "read:forecast write:forecast");
-        jwt = createJwt(claims);
+    void convert_shouldReturnEmptyFlux_whenJwtHasNoClaims() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        when(jwt.getClaims()).thenReturn(claims);
 
-        // When
-        Flux<GrantedAuthority> authorities = converter.convert(jwt);
+        // when
+        Flux<GrantedAuthority> result = jwtScopeConverter.convert(jwt);
 
-        // Then
-        StepVerifier.create(authorities.collectList())
-            .assertNext(grantedAuthorities -> {
-                assertThat(grantedAuthorities).hasSize(2);
-                assertThat(grantedAuthorities)
-                    .extracting("authority")
-                    .contains("SCOPE_read:forecast", "SCOPE_write:forecast");
-            })
-            .verifyComplete();
+        // then
+        StepVerifier.create(result)
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     @Test
-    void convert_should_extractPermissions_when_jwtContainsPermissions() {
-        // Given
-        claims.put("permissions", Arrays.asList("read:data", "write:data"));
-        jwt = createJwt(claims);
+    void convert_shouldReturnScopesAndPermissions_whenJwtHasBoth() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("scope", "read write");
+        claims.put("permissions", Arrays.asList("USER_READ", "USER_WRITE"));
+        when(jwt.getClaims()).thenReturn(claims);
 
-        // When
-        Flux<GrantedAuthority> authorities = converter.convert(jwt);
+        // when
+        Flux<GrantedAuthority> result = jwtScopeConverter.convert(jwt);
 
-        // Then
-        StepVerifier.create(authorities.collectList())
-            .assertNext(grantedAuthorities -> {
-                assertThat(grantedAuthorities).hasSize(2);
-                assertThat(grantedAuthorities)
-                    .extracting("authority")
-                    .contains("PERMISSION_read:data", "PERMISSION_write:data");
-            })
-            .verifyComplete();
+        // then
+        StepVerifier.create(result)
+                .expectNextCount(4)
+                .verifyComplete();
     }
 
     @Test
-    void convert_should_extractBothScopesAndPermissions_when_jwtContainsBoth() {
-        // Given
-        claims.put("scope", "read:forecast");
-        claims.put("permissions", Collections.singletonList("admin:all"));
-        jwt = createJwt(claims);
+    void extractScopesFromJwt_shouldReturnEmptyList_whenScopeClaimIsMissing() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        when(jwt.getClaims()).thenReturn(claims);
 
-        // When
-        Flux<GrantedAuthority> authorities = converter.convert(jwt);
+        // when
+        List<GrantedAuthority> result = jwtScopeConverter.extractScopesFromJwt(jwt);
 
-        // Then
-        StepVerifier.create(authorities.collectList())
-            .assertNext(grantedAuthorities -> {
-                assertThat(grantedAuthorities).hasSize(2);
-                assertThat(grantedAuthorities)
-                    .extracting("authority")
-                    .contains("SCOPE_read:forecast", "PERMISSION_admin:all");
-            })
-            .verifyComplete();
+        // then
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void convert_should_returnEmptyAuthorities_when_scopesAreEmpty() {
-        // Given
+    void extractScopesFromJwt_shouldReturnEmptyList_whenScopeClaimIsEmpty() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
         claims.put("scope", "");
-        jwt = createJwt(claims);
+        when(jwt.getClaims()).thenReturn(claims);
 
-        // When
-        Flux<GrantedAuthority> authorities = converter.convert(jwt);
+        // when
+        List<GrantedAuthority> result = jwtScopeConverter.extractScopesFromJwt(jwt);
 
-        // Then
-        StepVerifier.create(authorities.collectList())
-            .assertNext(grantedAuthorities -> 
-                assertThat(grantedAuthorities).isEmpty())
-            .verifyComplete();
+        // then
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void convert_should_returnEmptyAuthorities_when_noScopesOrPermissionsExist() {
-        // Given
-        jwt = createJwt(claims);
+    void extractScopesFromJwt_shouldReturnScopes_whenScopeClaimHasValidScopes() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("scope", "read write");
+        when(jwt.getClaims()).thenReturn(claims);
 
-        // When
-        Flux<GrantedAuthority> authorities = converter.convert(jwt);
+        // when
+        List<GrantedAuthority> result = jwtScopeConverter.extractScopesFromJwt(jwt);
 
-        // Then
-        StepVerifier.create(authorities.collectList())
-            .assertNext(grantedAuthorities -> 
-                assertThat(grantedAuthorities).isEmpty())
-            .verifyComplete();
+        // then
+        assertThat(result)
+                .hasSize(2)
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactly("SCOPE_read", "SCOPE_write");
     }
 
-    private Jwt createJwt(Map<String, Object> claims) {
-        return new Jwt(
-            "token",
-            Instant.now(),
-            Instant.now().plusSeconds(300),
-            headers,
-            claims
-        );
+    @Test
+    void extractPermissionsFromJwt_shouldReturnEmptyList_whenPermissionsClaimIsMissing() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        when(jwt.getClaims()).thenReturn(claims);
+
+        // when
+        List<GrantedAuthority> result = jwtScopeConverter.extractPermissionsFromJwt(jwt);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void extractPermissionsFromJwt_shouldReturnEmptyList_whenPermissionsClaimIsNotCollection() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("permissions", "not a collection");
+        when(jwt.getClaims()).thenReturn(claims);
+
+        // when
+        List<GrantedAuthority> result = jwtScopeConverter.extractPermissionsFromJwt(jwt);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void extractPermissionsFromJwt_shouldReturnPermissions_whenPermissionsClaimHasValidPermissions() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("permissions", Arrays.asList("USER_READ", "USER_WRITE"));
+        when(jwt.getClaims()).thenReturn(claims);
+
+        // when
+        List<GrantedAuthority> result = jwtScopeConverter.extractPermissionsFromJwt(jwt);
+
+        // then
+        assertThat(result)
+                .hasSize(2)
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactly("PERMISSION_USER_READ", "PERMISSION_USER_WRITE");
+    }
+
+    @Test
+    void extractPermissionsFromJwt_shouldFilterOutNonStringPermissions_whenPermissionsClaimHasMixedTypes() {
+        // given
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("permissions", Arrays.asList("USER_READ", 123, "USER_WRITE", true));
+        when(jwt.getClaims()).thenReturn(claims);
+
+        // when
+        List<GrantedAuthority> result = jwtScopeConverter.extractPermissionsFromJwt(jwt);
+
+        // then
+        assertThat(result)
+                .hasSize(2)
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactly("PERMISSION_USER_READ", "PERMISSION_USER_WRITE");
     }
 } 
