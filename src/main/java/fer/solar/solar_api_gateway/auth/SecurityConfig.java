@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
@@ -33,9 +34,19 @@ public class SecurityConfig {
         http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))
-            .authorizeExchange(authorizeExchangeSpec -> 
+            .authorizeExchange(authorizeExchangeSpec ->
                 authorizeExchangeSpec
                     .pathMatchers("/actuator/**").permitAll()
+                    .pathMatchers("/upload/**").permitAll()
+                    .pathMatchers("/power_plants/**").permitAll()
+                    .pathMatchers("/models/**").permitAll()
+                    .pathMatchers("/dashboard/**").permitAll()
+                    .pathMatchers("/events/**").permitAll()
+                    .pathMatchers("/forecasts/**").permitAll()
+                    .pathMatchers("/metrics/**").permitAll()
+                    .pathMatchers(HttpMethod.POST, "/users/**").hasAuthority("SCOPE_user:create")
+                    .pathMatchers(HttpMethod.GET, "/users/**").hasAuthority("SCOPE_user:read")
+                    .pathMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("SCOPE_user:delete")
                     .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
@@ -48,8 +59,8 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -72,10 +83,7 @@ public class SecurityConfig {
     @Bean
     public ReactiveJwtAuthenticationConverter grantedAuthoritiesExtractor() {
         ReactiveJwtAuthenticationConverter jwtAuthenticationConverter = new ReactiveJwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(token -> {
-            log.info("Request scopes: {}", token.getClaimAsStringList("scope"));
-            return new JwtScopeConverter().convert(token);
-        });
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new JwtScopeConverter());
         return jwtAuthenticationConverter;
     }
 } 
