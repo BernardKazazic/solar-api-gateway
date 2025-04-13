@@ -47,6 +47,12 @@ public class SecurityConfig {
                     .pathMatchers(HttpMethod.POST, "/users/**").hasAuthority("SCOPE_user:create")
                     .pathMatchers(HttpMethod.GET, "/users/**").hasAuthority("SCOPE_user:read")
                     .pathMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("SCOPE_user:delete")
+                    .pathMatchers(HttpMethod.POST, "/roles/**").hasAuthority("SCOPE_role:create")
+                    .pathMatchers(HttpMethod.GET, "/roles/**").hasAuthority("SCOPE_role:read")
+                    .pathMatchers(HttpMethod.PUT, "/roles/**").hasAuthority("SCOPE_role:update")
+                    .pathMatchers(HttpMethod.DELETE, "/roles/**").hasAuthority("SCOPE_role:delete")
+                    .pathMatchers(HttpMethod.GET, "/permissions/**").hasAuthority("SCOPE_permission:read")
+                    .pathMatchers(HttpMethod.PUT, "/permissions/**").hasAuthority("SCOPE_permission:update")
                     .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {

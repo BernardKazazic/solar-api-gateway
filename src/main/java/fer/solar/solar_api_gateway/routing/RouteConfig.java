@@ -24,6 +24,22 @@ public class RouteConfig {
                     .rewritePath("/users(?<segment>/?.*)", "/api/v1/users${segment}")
                     .addRequestHeader("X-Gateway-Request", "true"))
                 .uri(serviceUrisConfig.getUserManagement()))
+
+            // Route for role management
+            .route("role-management-service", r -> r
+                .path("/roles/**")
+                .filters(f -> f
+                    .rewritePath("/roles(?<segment>/?.*)", "/api/v1/roles${segment}")
+                    .addRequestHeader("X-Gateway-Request", "true"))
+                .uri(serviceUrisConfig.getUserManagement()))
+
+            // Route for permission management
+            .route("permission-management-service", r -> r
+                .path("/permissions/**")
+                .filters(f -> f
+                    .rewritePath("/permissions(?<segment>/?.*)", "/api/v1/permissions${segment}")
+                    .addRequestHeader("X-Gateway-Request", "true"))
+                .uri(serviceUrisConfig.getUserManagement()))
                 
             // Routes for the mock Flask service (running on port 5000)
             .route("mock-upload", r -> r
