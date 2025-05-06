@@ -17,11 +17,24 @@ public class RouteConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-            // Route for the user management service
-            .route("user-management-service", r -> r
+            .route("user-management-service-users", r -> r
                 .path("/users/**")
                 .filters(f -> f
                     .rewritePath("/users(?<segment>/?.*)", "/api/v1/users${segment}")
+                    .addRequestHeader("X-Gateway-Request", "true"))
+                .uri(serviceUrisConfig.getUserManagement()))
+
+            .route("user-management-service-roles", r -> r
+                .path("/roles/**")
+                .filters(f -> f
+                    .rewritePath("/roles(?<segment>/?.*)", "/api/v1/roles${segment}")
+                    .addRequestHeader("X-Gateway-Request", "true"))
+                .uri(serviceUrisConfig.getUserManagement()))
+
+            .route("user-management-service-permissions", r -> r
+                .path("/permissions/**")
+                .filters(f -> f
+                    .rewritePath("/permissions(?<segment>/?.*)", "/api/v1/permissions${segment}")
                     .addRequestHeader("X-Gateway-Request", "true"))
                 .uri(serviceUrisConfig.getUserManagement()))
                 
@@ -54,15 +67,6 @@ public class RouteConfig {
                 .path("/metrics/**")
                 .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                 .uri(serviceUrisConfig.getMockFlask()))
-                
-            // Add more routes for other microservices here
-            // Example:
-            // .route("user-service", r -> r
-            //     .path("/api/users/**")
-            //     .filters(f -> f
-            //         .rewritePath("/api/users/(?<segment>.*)", "/${segment}")
-            //         .addRequestHeader("X-Gateway-Request", "true"))
-            //     .uri("lb://user-service"))
                 
             .build();
     }
