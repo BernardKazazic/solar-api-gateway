@@ -58,7 +58,7 @@ public class RouteConfig {
                 .route("ui-data-service-models-put", r -> r
                         .path("/models/**")
                         .and()
-                        .method(HttpMethod.PUT)
+                        .method("PUT", "GET")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getUiData()))
