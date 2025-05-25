@@ -48,10 +48,17 @@ public class RouteConfig {
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
 
-                .route("ui-data-service-models", r -> r
+                .route("ui-data-service-models-get", r -> r
                         .path("/models")
                         .and()
                         .method(HttpMethod.GET)
+                        .filters(f -> f
+                                .addRequestHeader("X-Gateway-Request", "true"))
+                        .uri(serviceUrisConfig.getUiData()))
+                .route("ui-data-service-models-put", r -> r
+                        .path("/models/**")
+                        .and()
+                        .method(HttpMethod.PUT)
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getUiData()))
@@ -73,6 +80,8 @@ public class RouteConfig {
                         .uri(serviceUrisConfig.getMockFlask()))
                 .route("mock-models", r -> r
                         .path("/models/**")
+                        .and()
+                        .method("GET", "DELETE", "PATCH", "OPTIONS", "HEAD", "TRACE")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getMockFlask()))
                 .route("mock-dashboard", r -> r
