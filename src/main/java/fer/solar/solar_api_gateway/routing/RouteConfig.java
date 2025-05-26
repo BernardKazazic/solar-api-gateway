@@ -43,22 +43,23 @@ public class RouteConfig {
                 .route("model-management-service-models", r -> r
                         .path("/models")
                         .and()
-                        .method(HttpMethod.POST)
+                        .method("GET", "POST")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
 
-                .route("ui-data-service-models-get", r -> r
-                        .path("/models")
+                .route("model-management-service-model-get", r -> r
+                        .path("/models/**")
                         .and()
-                        .method(HttpMethod.GET)
+                        .method("GET")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getUiData()))
+                        .uri(serviceUrisConfig.getModelManagement()))
+
                 .route("ui-data-service-models-put", r -> r
                         .path("/models/**")
                         .and()
-                        .method("PUT", "GET")
+                        .method("PUT")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getUiData()))
