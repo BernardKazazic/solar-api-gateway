@@ -40,29 +40,11 @@ public class RouteConfig {
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getUserManagement()))
 
-                .route("model-management-service-models", r -> r
-                        .path("/models")
-                        .and()
-                        .method("GET", "POST")
+                .route("model-management-service", r -> r
+                        .path("/models/**")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
-
-                .route("model-management-service-model-get", r -> r
-                        .path("/models/**")
-                        .and()
-                        .method("GET")
-                        .filters(f -> f
-                                .addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getModelManagement()))
-
-                .route("ui-data-service-models-put", r -> r
-                        .path("/models/**")
-                        .and()
-                        .method("PUT")
-                        .filters(f -> f
-                                .addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getUiData()))
 
                 .route("mock-upload", r -> r
                         .path("/upload/**")
