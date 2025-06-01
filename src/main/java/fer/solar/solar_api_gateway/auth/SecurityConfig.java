@@ -44,6 +44,7 @@ public class SecurityConfig {
                     .pathMatchers("/events/**").permitAll()
                     .pathMatchers("/forecasts/**").permitAll()
                     .pathMatchers("/metrics/**").permitAll()
+                    .pathMatchers("/features/**").permitAll()
                     .pathMatchers(HttpMethod.POST, "/users/**").hasAuthority("PERMISSION_user:create")
                     .pathMatchers(HttpMethod.GET, "/users/**").hasAuthority("PERMISSION_user:read")
                     .pathMatchers(HttpMethod.PUT, "/users/{userId}").hasAuthority("PERMISSION_user:update")

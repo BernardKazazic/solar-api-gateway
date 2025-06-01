@@ -7,7 +7,6 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,14 +24,12 @@ public class RouteConfig {
                          "/api/v1/users${segment}")
                         .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getUserManagement()))
-
                 .route("user-management-service-roles", r -> r
                         .path("/roles/**")
                         .filters(f -> f
                                 .rewritePath("/roles(?<segment>/?.*)", "/api/v1/roles${segment}")
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getUserManagement()))
-
                 .route("user-management-service-permissions", r -> r
                         .path("/permissions/**")
                         .filters(f -> f
@@ -40,10 +37,13 @@ public class RouteConfig {
                                 .addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getUserManagement()))
 
-                .route("model-management-service", r -> r
+                .route("model-management-service-models", r -> r
                         .path("/models/**")
-                        .filters(f -> f
-                                .addRequestHeader("X-Gateway-Request", "true"))
+                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
+                        .uri(serviceUrisConfig.getModelManagement()))
+                .route("model-management-service-model-features", r -> r
+                        .path("/features/**")
+                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
 
                 .route("mock-upload", r -> r
