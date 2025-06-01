@@ -4,6 +4,11 @@ FROM registry.access.redhat.com/ubi8/openjdk-21:1.18 as build
 # Workdir inside the container
 WORKDIR /app
 
+USER root
+RUN chown 1000730000:0 /app
+
+USER 1000730000
+
 # Copy the Maven project files
 COPY . .
 
