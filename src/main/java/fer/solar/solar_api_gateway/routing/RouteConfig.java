@@ -41,7 +41,7 @@ public class RouteConfig {
                         .path("/models/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
-                .route("model-management-service-model-features", r -> r
+                .route("model-management-service-features", r -> r
                         .path("/features/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
@@ -52,19 +52,6 @@ public class RouteConfig {
                         .uri(serviceUrisConfig.getMockFlask()))
                 .route("mock-power-plants", r -> r
                         .path("/power_plants/**")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
-                // TODO remove when mock models is removed fully
-                .route("mock-models-service-models", r -> r
-                        .path("/models", "/models/")
-                        .and()
-                        .method("PUT", "DELETE", "PATCH", "OPTIONS", "HEAD", "TRACE")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
-                .route("mock-models", r -> r
-                        .path("/models/**")
-                        .and()
-                        .method("GET", "DELETE", "PATCH", "OPTIONS", "HEAD", "TRACE")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getMockFlask()))
                 .route("mock-dashboard", r -> r
