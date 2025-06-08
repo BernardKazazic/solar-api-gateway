@@ -46,11 +46,7 @@ public class RouteConfig {
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
                 .route("model-management-service-power-plant", r -> r
-                        .path("/power_plant")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getModelManagement()))
-                .route("model-management-service-power-plant-overview", r -> r
-                        .path("/power_plant/overview")
+                        .path("/power_plant/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
 
