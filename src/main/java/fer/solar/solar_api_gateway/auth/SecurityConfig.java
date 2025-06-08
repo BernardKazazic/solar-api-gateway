@@ -43,7 +43,7 @@ public class SecurityConfig {
                     .pathMatchers("/models/**").permitAll()
                     .pathMatchers("/dashboard/**").permitAll()
                     .pathMatchers("/events/**").permitAll()
-                    .pathMatchers("/forecasts/**").permitAll()
+                    .pathMatchers("/forecast/**").permitAll()
                     .pathMatchers("/metrics/**").permitAll()
                     .pathMatchers("/features/**").permitAll()
                     .pathMatchers(HttpMethod.POST, "/users/**").hasAuthority("PERMISSION_user:create")

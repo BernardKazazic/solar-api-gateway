@@ -50,6 +50,11 @@ public class RouteConfig {
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
 
+                .route("prediction-service-forecast", r -> r
+                        .path("/forecast/**")
+                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
+                        .uri(serviceUrisConfig.getPredictionService()))
+
                 .route("mock-upload", r -> r
                         .path("/upload/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
@@ -64,10 +69,6 @@ public class RouteConfig {
                         .uri(serviceUrisConfig.getMockFlask()))
                 .route("mock-events", r -> r
                         .path("/events/**")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
-                .route("mock-forecasts", r -> r
-                        .path("/forecasts/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getMockFlask()))
                 .route("mock-metrics", r -> r
