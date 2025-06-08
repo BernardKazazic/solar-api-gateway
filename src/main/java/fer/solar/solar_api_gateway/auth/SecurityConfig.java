@@ -38,6 +38,7 @@ public class SecurityConfig {
                 authorizeExchangeSpec
                     .pathMatchers("/actuator/**").permitAll()
                     .pathMatchers("/upload/**").permitAll()
+                    .pathMatchers("/power_plant/**").permitAll()
                     .pathMatchers("/power_plants/**").permitAll()
                     .pathMatchers("/models/**").permitAll()
                     .pathMatchers("/dashboard/**").permitAll()

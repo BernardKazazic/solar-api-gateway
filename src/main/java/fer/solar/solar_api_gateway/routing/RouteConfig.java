@@ -45,6 +45,14 @@ public class RouteConfig {
                         .path("/features/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getModelManagement()))
+                .route("model-management-service-power-plant", r -> r
+                        .path("/power_plant")
+                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
+                        .uri(serviceUrisConfig.getModelManagement()))
+                .route("model-management-service-power-plant-overview", r -> r
+                        .path("/power_plant/overview")
+                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
+                        .uri(serviceUrisConfig.getModelManagement()))
 
                 .route("mock-upload", r -> r
                         .path("/upload/**")
