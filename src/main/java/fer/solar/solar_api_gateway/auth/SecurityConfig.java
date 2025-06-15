@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import java.sql.SQLOutput;
 import java.util.Arrays;
 
 @Slf4j
@@ -28,6 +29,9 @@ public class SecurityConfig {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.audiences}")
     private String audience;
+
+    @Value("${cors-allowed-hosts}")
+    private String[] allowedHosts;
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -67,8 +71,9 @@ public class SecurityConfig {
     
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        System.out.println(Arrays.toString(allowedHosts));
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList(allowedHosts));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
