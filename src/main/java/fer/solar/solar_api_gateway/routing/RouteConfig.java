@@ -58,6 +58,10 @@ public class RouteConfig {
                         .path("/reading/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getPredictionService()))
+                .route("prediction-service-metric", r -> r
+                        .path("/metric/**")
+                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
+                        .uri(serviceUrisConfig.getPredictionService()))
 
                 .route("mock-upload", r -> r
                         .path("/upload/**")
