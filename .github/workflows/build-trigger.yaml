@@ -1,0 +1,22 @@
+# .github/workflows/spotless-check.yml
+name: OKD Build Trigger
+
+on:
+  push:
+    branches: [prod]     
+    
+jobs:
+  build-trigger:
+    name: Trigger OKD build
+    runs-on: [self-hosted, Openshift]  # Use your org-wide self-hosted runner
+
+    steps:  
+      - name: Login to cluster
+        run: |
+          oc login --token=$OKD_TOKEN --server=$OKD_SERVER_URL
+      - name: Start BuildConfig
+        run: |
+          oc start-build api-gateway-docker-build -n solar-build     
+        env:
+          OKD_TOKEN: ${{ secrets.OKD_TOKEN }}
+          OKD_SERVER: ${{ secrets.OKD_SERVER_URL }}
