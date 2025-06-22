@@ -13,10 +13,7 @@ jobs:
     steps:  
       - name: Login to cluster
         run: |
-          oc login --token=$OKD_TOKEN --server=$OKD_SERVER_URL
+          oc login --token="${{ secrets.OKD_TOKEN }}" --server="${{ secrets.OKD_SERVER_URL }}"
       - name: Start BuildConfig
         run: |
-          oc start-build api-gateway-docker-build -n solar-build     
-        env:
-          OKD_TOKEN: ${{ secrets.OKD_TOKEN }}
-          OKD_SERVER: ${{ secrets.OKD_SERVER_URL }}
+          oc start-build api-gateway-docker-build -n solar-build
