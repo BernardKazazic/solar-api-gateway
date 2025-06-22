@@ -16,4 +16,8 @@ jobs:
           oc login --token="${{ secrets.OKD_TOKEN }}" --server="${{ secrets.OKD_SERVER_URL }}" --insecure-skip-tls-verify
       - name: Start BuildConfig
         run: |
-          oc start-build api-gateway-docker-build -n solar-build
+          oc start-build api-gateway-docker-build -n solar-build --wait --follow
+      - name: Trigger redeployment with new image
+        run: |
+          oc rollout restart deployment/solar-api-gateway -n solar
+      
