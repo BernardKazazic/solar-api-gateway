@@ -13,7 +13,7 @@ jobs:
     steps:  
       - name: Login to cluster
         run: |
-          oc login --token="${{ secrets.OKD_TOKEN }}" --server="${{ secrets.OKD_SERVER_URL }}"
+          oc login --token="${{ secrets.OKD_TOKEN }}" --server="${{ secrets.OKD_SERVER_URL }}" --insecure-skip-tls-verify
       - name: Start BuildConfig
         run: |
           oc start-build api-gateway-docker-build -n solar-build
