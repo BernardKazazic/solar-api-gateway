@@ -37,15 +37,10 @@ public class SecurityConfig {
             .authorizeExchange(authorizeExchangeSpec ->
                 authorizeExchangeSpec
                     .pathMatchers("/actuator/**").permitAll()
-                    .pathMatchers("/upload/**").permitAll()
                     .pathMatchers("/power_plant/**").permitAll()
-                    .pathMatchers("/power_plants/**").permitAll()
                     .pathMatchers("/models/**").permitAll()
-                    .pathMatchers("/dashboard/**").permitAll()
-                    .pathMatchers("/events/**").permitAll()
                     .pathMatchers("/forecast/**").permitAll()
                     .pathMatchers("/reading/**").permitAll()
-                    .pathMatchers("/metrics/**").permitAll()
                     .pathMatchers("/features/**").permitAll()
                     .pathMatchers("/metric/**").permitAll()
                     .pathMatchers("/playground/**").permitAll()

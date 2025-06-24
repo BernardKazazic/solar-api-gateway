@@ -13,7 +13,6 @@ import lombok.Setter;
 public class ServiceUrisConfig {
 
     private String userManagement;
-    private String mockFlask;
     private String modelManagement;
     private String predictionService;
     
