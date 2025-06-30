@@ -62,27 +62,10 @@ public class RouteConfig {
                         .path("/metric/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getPredictionService()))
-
-                .route("mock-upload", r -> r
-                        .path("/upload/**")
+                .route("prediction-service-playground", r -> r
+                        .path("/playground/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
-                .route("mock-power-plants", r -> r
-                        .path("/power_plants/**")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
-                .route("mock-dashboard", r -> r
-                        .path("/dashboard/**")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
-                .route("mock-events", r -> r
-                        .path("/events/**")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
-                .route("mock-metrics", r -> r
-                        .path("/metrics/**")
-                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
-                        .uri(serviceUrisConfig.getMockFlask()))
+                        .uri(serviceUrisConfig.getPredictionService()))
                 
                 .build();
     }
