@@ -48,6 +48,7 @@ public class SecurityConfig {
                     .pathMatchers("/features/**").permitAll()
                     .pathMatchers("/metric/**").permitAll()
                     .pathMatchers("/playground/**").permitAll()
+                    .pathMatchers("/generate/**").permitAll()
                     .pathMatchers(HttpMethod.POST, "/users/**").hasAuthority("PERMISSION_user:create")
                     .pathMatchers(HttpMethod.GET, "/users/**").hasAuthority("PERMISSION_user:read")
                     .pathMatchers(HttpMethod.PUT, "/users/{userId}").hasAuthority("PERMISSION_user:update")

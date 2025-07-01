@@ -66,7 +66,11 @@ public class RouteConfig {
                         .path("/playground/**")
                         .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
                         .uri(serviceUrisConfig.getPredictionService()))
-                
+                .route("prediction-service-generate", r -> r
+                        .path("/generate/**")
+                        .filters(f -> f.addRequestHeader("X-Gateway-Request", "true"))
+                        .uri(serviceUrisConfig.getPredictionService()))
+                        
                 .build();
     }
 } 
